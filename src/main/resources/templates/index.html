@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline Service</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+    <script>
+        function NewPost() {
+            let data = {'title': ${title}, 'writer': writer, 'text': text, 'password': password}
+            $.ajax({
+                type: "POST",
+                URL: "/api/newPost",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    alert('게시물이 성공적으로 작성되었습니다.');
+                    window.location.reload();
+                }
+            });
+        }
+    </script>
+    <style>
+
+    </style>
+</head>
+<body>
+<h1>Login</h1>
+<form action="/mvc/memLogin" method="post">
+    Title : <input type="text" name="title" size="" th:id ="title"><br>
+    Writer : <input type="text" name="writer" th:id="writer"><br>
+    Text : <input type="text" name="text" th:id = "text"><br>
+    Password: <input type="password" name="Password" th:id = "password"><br>
+    <input type="submit" value="작성">
+
+</form>
+<button onclick="NewPost">JOIN</button>
+</body>
+</html>
