@@ -34,7 +34,7 @@ public class PostingController {
     }
 
    @GetMapping("api/posts/{id}")
-    public Post getPost(@PathVariable Long id, Post post) {
+    public Post getPost(@PathVariable Long id, @RequestBody Post post) {
         return post;
     }
 
