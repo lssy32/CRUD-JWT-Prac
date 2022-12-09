@@ -34,7 +34,7 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
         );
-        if (post.getPassword() == postingRequestDto.getPassword()) {
+        if (post.getPassword().equals(postingRequestDto.getPassword())) {
             post.update(postingRequestDto);
         }
         return post;
@@ -45,13 +45,11 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
         );
-        if (post.getPassword() != passwordOnlyDto.getPassword()){
-            return "비밀번호가 틀립니다.";
-        } else if (post.getPassword() == passwordOnlyDto.getPassword()) {
+        if (post.getPassword().equals(passwordOnlyDto.getPassword())){
             postRepository.deleteById(id);
             return "삭제 성공";
         } else {
-            return "저는 뭘까요?";
+            return "비밀번호가 틀립니다.";
         }
 
         }
