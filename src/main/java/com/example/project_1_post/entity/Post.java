@@ -34,9 +34,8 @@ public class Post extends Timestamped{
         this.content = postingRequestDto.getContent();
     }
 
-//    public void update(PostingRequestDto postingRequestDto) {
-//        this.title = postingRequestDto.getTitle();
-//        this.writer = postingRequestDto.getWriter();
-//        this.text = postingRequestDto.getText();
-//    }
+    public void update(PostingRequestDto postingRequestDto) {
+        this.title = postingRequestDto.getTitle();
+        this.content = postingRequestDto.getContent();
+    }
 }

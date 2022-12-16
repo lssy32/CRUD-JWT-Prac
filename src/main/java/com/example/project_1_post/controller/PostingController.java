@@ -5,11 +5,13 @@ import com.example.project_1_post.dto.PostingRequestDto;
 import com.example.project_1_post.entity.Post;
 import com.example.project_1_post.service.PostService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,17 +36,21 @@ public class PostingController {
     }
 
    @GetMapping("api/posts/{id}")
-    public Post getPost(@PathVariable Long id, @RequestBody Post post) {
-        return post;
+    public Optional<Post> getPost(@PathVariable Long id) {
+        return postService.getPost(id);
     }
 
-//    @PutMapping("/api/posts/{id}")
-//    public Post updatePost(@PathVariable Long id, @RequestBody PostingRequestDto postingRequestDto){
-//        return postService.update(id, postingRequestDto);
-//    }
-//
-//  @DeleteMapping("/api/posts/del/{id}")
-//    public String deletePost(@PathVariable Long id, @RequestBody PasswordOnlyDto passwordOnlyDto) {
-//        return postService.deletePost(id, passwordOnlyDto);
-//    }
+    @PutMapping("/api/posts/{id}")
+    public Post updatePost(@PathVariable Long id, @RequestBody PostingRequestDto postingRequestDto, HttpServletRequest request){
+        return postService.update(id, postingRequestDto, request);
+    }
+
+  @DeleteMapping("/api/posts/del/{id}")
+    public Map deletePost(@PathVariable Long id, HttpServletRequest request) {
+        postService.deletePost(id, request);
+      Map map = new HashMap<>();
+      map.put("msg", "게시물 삭제 성공");
+      map.put("statusCode", "200");
+      return map;
+    }
 }
