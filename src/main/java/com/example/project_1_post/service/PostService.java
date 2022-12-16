@@ -40,12 +40,11 @@ public class PostService {
                     throw new IllegalArgumentException("Token Error");
                 }
                 // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-                String username = claims.getSubject();
-                User user = userRepository.findByUsername(username).orElseThrow(
+                User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
                         () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
                 );
-
-                Post post = new Post(user.getUsername(), postingRequestDto);
+                String username = user.getUsername();
+                Post post = new Post(username, postingRequestDto);
                 postRepository.save(post);
                 return post;
 

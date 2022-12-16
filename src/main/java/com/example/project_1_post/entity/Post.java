@@ -16,7 +16,7 @@ public class Post extends Timestamped{
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String username;
 
     @Column(nullable = false)
@@ -29,7 +29,7 @@ public class Post extends Timestamped{
     }
 
     public Post(String username, PostingRequestDto postingRequestDto) {
-        this.username = getUsername();
+        this.username = username;
         this.title = postingRequestDto.getTitle();
         this.content = postingRequestDto.getContent();
     }
