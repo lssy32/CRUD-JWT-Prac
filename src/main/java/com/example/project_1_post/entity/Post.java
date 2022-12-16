@@ -17,31 +17,26 @@ public class Post extends Timestamped{
     private String title;
 
     @Column(nullable = false)
-    private String writer;
+    private String username;
 
     @Column(nullable = false)
-    private Long password;
+    private String content;
 
-    @Column(nullable = false)
-    private String text;
-
-    public Post(String title, String writer, String text, Long password) {
+    public Post(String title, String username, String content) {
         this.title = title;
-        this.writer = writer;
-        this.text = text;
-        this.password = password;
+        this.username = username;
+        this.content = content;
     }
 
-    public Post(PostingRequestDto postingRequestDto) {
+    public Post(String username, PostingRequestDto postingRequestDto) {
+        this.username = getUsername();
         this.title = postingRequestDto.getTitle();
-        this.writer = postingRequestDto.getWriter();
-        this.text = postingRequestDto.getText();
-        this.password = postingRequestDto.getPassword();
+        this.content = postingRequestDto.getContent();
     }
 
-    public void update(PostingRequestDto postingRequestDto) {
-        this.title = postingRequestDto.getTitle();
-        this.writer = postingRequestDto.getWriter();
-        this.text = postingRequestDto.getText();
-    }
+//    public void update(PostingRequestDto postingRequestDto) {
+//        this.title = postingRequestDto.getTitle();
+//        this.writer = postingRequestDto.getWriter();
+//        this.text = postingRequestDto.getText();
+//    }
 }

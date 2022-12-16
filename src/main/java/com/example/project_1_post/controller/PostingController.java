@@ -4,6 +4,8 @@ import com.example.project_1_post.dto.PasswordOnlyDto;
 import com.example.project_1_post.dto.PostingRequestDto;
 import com.example.project_1_post.entity.Post;
 import com.example.project_1_post.service.PostService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +24,8 @@ public class PostingController {
     }
 
     @PostMapping("api/newpost")
-    public Post createPost(@RequestBody PostingRequestDto RequestDto) {
-        return postService.createPost(RequestDto);
+    public Post createPost(@RequestBody PostingRequestDto RequestDto, HttpServletRequest request) {
+        return postService.createPost(RequestDto, request);
     }
 
     @GetMapping("api/allposts")
@@ -36,13 +38,13 @@ public class PostingController {
         return post;
     }
 
-    @PutMapping("/api/posts/{id}")
-    public Post updatePost(@PathVariable Long id, @RequestBody PostingRequestDto postingRequestDto){
-        return postService.update(id, postingRequestDto);
-    }
-
-  @DeleteMapping("/api/posts/del/{id}")
-    public String deletePost(@PathVariable Long id, @RequestBody PasswordOnlyDto passwordOnlyDto) {
-        return postService.deletePost(id, passwordOnlyDto);
-    }
+//    @PutMapping("/api/posts/{id}")
+//    public Post updatePost(@PathVariable Long id, @RequestBody PostingRequestDto postingRequestDto){
+//        return postService.update(id, postingRequestDto);
+//    }
+//
+//  @DeleteMapping("/api/posts/del/{id}")
+//    public String deletePost(@PathVariable Long id, @RequestBody PasswordOnlyDto passwordOnlyDto) {
+//        return postService.deletePost(id, passwordOnlyDto);
+//    }
 }
