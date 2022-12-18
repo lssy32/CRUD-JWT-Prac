@@ -21,14 +21,18 @@ public class User {
     private String username;
 
     @Column(nullable = false)
-    @Pattern(regexp= "^[a-z0-9]{8,15}$", message = "8~15자리 영어 소문자와 숫자만 입력 가능합니다.")
+    @Pattern(regexp= "^[A-Za-z0-9$@$!%*?&]{8,15}$", message = "8~15자리로 입력해주세요 (영어 대/소문자, 특수문자, 숫자 사용 가능")
     private String password;
 
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private UserRoleEnum role;
 
 
-    public User(String username, String password) {
+    public User(String username, String password, UserRoleEnum role) {
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
 }
