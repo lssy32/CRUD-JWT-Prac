@@ -89,7 +89,7 @@ public class PostingController {
             Post post = postRepository.findById(id).orElseThrow(
                     () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
             );
-            return postService.update(id, postingRequestDto, post, user);
+            return postService.updatePost(id, postingRequestDto, post, user);
         } else {
             throw new IllegalArgumentException("토큰이 없습니다.");
         }
