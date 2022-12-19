@@ -26,31 +26,12 @@ public class PostService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public Post createPost(PostingRequestDto postingRequestDto, HttpServletRequest request) {
+    public Post createPost(PostingRequestDto postingRequestDto, User user) {
         // Request에서 Token 가져오기
-        String token = jwtUtil.resolveToken(request); // 토큰 꺼내기
-        Claims claims; // 이건 모지
-
-        if (token != null) {
-            // Token 검증
-            if (jwtUtil.validateToken(token)) {
-                // 토큰에서 사용자 정보 가져오기
-                claims = jwtUtil.getUserInfoFromToken(token);
-            } else {
-                throw new IllegalArgumentException("Token Error");
-            }
-            // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
-            );
             String username = user.getUsername();
             Post post = new Post(username, postingRequestDto);
             postRepository.save(post);
             return post;
-
-        } else {
-            return null;
-        }
     }
 
     @Transactional(readOnly = true)
@@ -64,61 +45,18 @@ public class PostService {
     }
 
     @Transactional
-    public Post update(Long id, PostingRequestDto postingRequestDto, HttpServletRequest request) {
-        // Request에서 Token 가져오기
-        String token = jwtUtil.resolveToken(request); // 토큰 꺼내기
-        Claims claims; // 이건 모지
-
-        if (token != null) {
-            // Token 검증
-            if (jwtUtil.validateToken(token)) {
-                // 토큰에서 사용자 정보 가져오기
-                claims = jwtUtil.getUserInfoFromToken(token);
-            } else {
-                throw new IllegalArgumentException("Token Error");
-            }
-            // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
-            );
-
-            Post post = postRepository.findById(id).orElseThrow(
-                    () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
-            );
+    public Post update(Long id, PostingRequestDto postingRequestDto, Post post, User user) {
             if (User.isAdmin(user)){
                 post.update(postingRequestDto);
             } else if (Post.isSameName(post, user)) {
                 post.update(postingRequestDto);
             }
             return post;
-        } else {
-            return null;
-        }
     }
 
 
     @Transactional
-    public void deletePost(Long id, HttpServletRequest request) {
-        // Request에서 Token 가져오기
-        String token = jwtUtil.resolveToken(request); // 토큰 꺼내기
-        Claims claims; // 이건 모지
-
-        if (token != null) {
-            // Token 검증
-            if (jwtUtil.validateToken(token)) {
-                // 토큰에서 사용자 정보 가져오기
-                claims = jwtUtil.getUserInfoFromToken(token);
-            } else {
-                throw new IllegalArgumentException("Token Error");
-            }
-            // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
-            );
-
-            Post post = postRepository.findById(id).orElseThrow(
-                    () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
-            );
+    public void deletePost(Long id, Post post, User user) {
             if (User.isAdmin(user)){
                 postRepository.deleteById(id);
             } else if (Post.isSameName(post, user)) {
@@ -126,4 +64,3 @@ public class PostService {
             }
         }
     }
-}

@@ -22,6 +22,7 @@ public class Post extends Timestamped{
     @Column(nullable = false)
     private String content;
 
+
     public Post(String title, String username, String content) {
         this.title = title;
         this.username = username;
