@@ -27,7 +27,6 @@ public class PostService {
 
     @Transactional
     public Post createPost(PostingRequestDto postingRequestDto, User user) {
-        // Request에서 Token 가져오기
             String username = user.getUsername();
             Post post = new Post(username, postingRequestDto);
             postRepository.save(post);

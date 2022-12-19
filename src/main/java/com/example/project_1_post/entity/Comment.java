@@ -18,6 +18,10 @@ public class Comment {
     @Column(nullable = false)
     private String content;
 
-    // Comment()
+    public Comment(Long id, String username, String content){
+        this.id = id;
+        this.username = username;
+        this.content = content;
+    }
 
 }
