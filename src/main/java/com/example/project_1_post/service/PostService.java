@@ -85,8 +85,9 @@ public class PostService {
             Post post = postRepository.findById(id).orElseThrow(
                     () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
             );
-
-            if (post.getUsername().equals(user.getUsername())) {
+            if (User.isAdmin(user)){
+                post.update(postingRequestDto);
+            } else if (Post.isSameName(post, user)) {
                 post.update(postingRequestDto);
             }
             return post;
@@ -118,11 +119,11 @@ public class PostService {
             Post post = postRepository.findById(id).orElseThrow(
                     () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
             );
-
-            if (post.getUsername().equals(user.getUsername())) {
+            if (User.isAdmin(user)){
+                postRepository.deleteById(id);
+            } else if (Post.isSameName(post, user)) {
                 postRepository.deleteById(id);
             }
-
         }
     }
 }

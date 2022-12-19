@@ -16,7 +16,7 @@ public class Post extends Timestamped{
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private String username;
 
     @Column(nullable = false)
@@ -37,5 +37,13 @@ public class Post extends Timestamped{
     public void update(PostingRequestDto postingRequestDto) {
         this.title = postingRequestDto.getTitle();
         this.content = postingRequestDto.getContent();
+    }
+
+    public static boolean isSameName(Post post, User user){
+        if (post.getUsername().equals(user.getUsername())){
+            return true;
+        }else {
+            return false;
+        }
     }
 }
