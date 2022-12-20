@@ -17,8 +17,8 @@ public class CommentService {
     @Transactional
     public Comment createComment(CommentDto commentDto, User user, Post post) {
         Comment comment = new Comment(user.getUsername(), commentDto.getContent());
-        post.addCommentList(comment);
         commentRepository.save(comment);
+        post.addCommentList(comment);
         return comment;
     }
 
@@ -26,9 +26,11 @@ public class CommentService {
     public Comment updateComment(Long id, CommentDto commentDto, Comment comment, User user, Post post) {
         if (User.isAdmin(user)){
             comment.update(commentDto);
+            post.sortCommentList();
             return comment;
         } else if (Comment.isSameNameComment(comment, user)) {
             comment.update(commentDto);
+            post.sortCommentList();
             return comment;
         } else {
             throw new IllegalArgumentException("권한이 없습니다.");

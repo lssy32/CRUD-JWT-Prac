@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -45,9 +46,8 @@ public class Post extends Timestamped{
     public void addCommentList(Comment comment){
         this.comments.add(comment);
     }
-
     public void sortCommentList(){
-        Collections.sort(comments, Collections.reverseOrder());
+        comments.sort(Comparator.comparing(Timestamped::getModifiedAt));
     }
 
     public void update(PostingRequestDto postingRequestDto) {
