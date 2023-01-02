@@ -1,7 +1,8 @@
 package com.example.project_1_post.controller;
 
-import com.example.project_1_post.dto.PasswordOnlyDto;
-import com.example.project_1_post.dto.PostingRequestDto;
+import com.example.project_1_post.dto.AuthenticatedUser;
+import com.example.project_1_post.dto.PostsRequestDto;
+import com.example.project_1_post.dto.PostsResponseDto;
 import com.example.project_1_post.entity.Post;
 import com.example.project_1_post.entity.User;
 import com.example.project_1_post.jwt.JwtUtil;
@@ -20,7 +21,7 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-public class PostingController {
+public class PostsController {
     private final PostService postService;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
@@ -34,23 +35,23 @@ public class PostingController {
     }
 
     @PostMapping("api/newpost")
-    public Post createPost(@RequestBody PostingRequestDto requestDto, HttpServletRequest request) {
+    public PostsResponseDto createPost(@RequestBody PostsRequestDto postsRequestDto, HttpServletRequest request) {
         String token = jwtUtil.resolveToken(request); // 토큰 꺼내기
         Claims claims; // 이건 모지
-
+        AuthenticatedUser authenticatedUser = jwtUtil.validateAndGetInfo(token);
         if (token != null) {
             // Token 검증
             if (jwtUtil.validateToken(token)) {
                 // 토큰에서 사용자 정보 가져오기
-                claims = jwtUtil.getUserInfoFromToken(token);
+                authenticatedUser = jwtUtil.validateAndGetInfo(token);
             } else {
                 throw new IllegalArgumentException("토큰이 일치하지 않습니다.");
             }
             // 토큰에서 가져온 사용자 정보를 사용하여 DB 조회
-            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
+            User user = userRepository.findByUsername(authenticatedUser.getUsername()).orElseThrow(
                     () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
             );
-            return postService.createPost(requestDto, user);
+            return postService.createPost(postsRequestDto, authenticatedUser.getUsername());
         } else {
             throw new IllegalArgumentException("토큰이 없습니다.");
         }
@@ -58,17 +59,17 @@ public class PostingController {
     }
 
     @GetMapping("api/allposts")
-    public List<Post> getAllPosts() {
+    public List<PostsResponseDto> getAllPosts() {
         return postService.getAllPosts();
     }
 
     @GetMapping("api/posts/{id}")
-    public Optional<Post> getPost(@PathVariable Long id) {
+    public PostsResponseDto getPost(@PathVariable Long id) {
         return postService.getPost(id);
     }
 
     @PutMapping("/api/posts/{id}")
-    public Post updatePost(@PathVariable Long id, @RequestBody PostingRequestDto postingRequestDto, HttpServletRequest request) {
+    public Post updatePost(@PathVariable Long id, @RequestBody PostsRequestDto postsRequestDto, HttpServletRequest request) {
         // Request에서 Token 가져오기
         String token = jwtUtil.resolveToken(request); // 토큰 꺼내기
         Claims claims; // 이건 모지
@@ -89,7 +90,7 @@ public class PostingController {
             Post post = postRepository.findById(id).orElseThrow(
                     () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
             );
-            return postService.updatePost(id, postingRequestDto, post, user);
+            return postService.updatePost(id, postsRequestDto, post, user);
         } else {
             throw new IllegalArgumentException("토큰이 없습니다.");
         }

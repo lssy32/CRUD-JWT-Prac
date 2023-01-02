@@ -1,6 +1,6 @@
 package com.example.project_1_post.entity;
 
-import com.example.project_1_post.dto.CommentDto;
+import com.example.project_1_post.dto.CommentRequestDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,18 +19,18 @@ public class Comment extends Timestamped{
     @Column(nullable = false)
     private String content;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "Post_Id")
-//    private Post post;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "Post_Id", nullable = false)
+    private Post post;
 
-    public Comment(String username, String content)  {
-        this.username = username;
-        this.content = content;
-//        this.post = post;
+    public Comment(User user, CommentRequestDto commentRequestDto, Post post)  {
+        this.username = user.getUsername();
+        this.content = commentRequestDto.getContent();
+        this.post = post;
     }
 
-    public void update(CommentDto commentDto) {
-        this.content = commentDto.getContent();
+    public void update(CommentRequestDto commentRequestDto) {
+        this.content = commentRequestDto.getContent();
     }
 
     public static boolean isSameNameComment(Comment comment, User user) {

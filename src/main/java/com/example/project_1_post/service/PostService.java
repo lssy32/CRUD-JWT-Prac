@@ -1,22 +1,17 @@
 package com.example.project_1_post.service;
 
-import com.example.project_1_post.dto.PasswordOnlyDto;
-import com.example.project_1_post.dto.PostingRequestDto;
-import com.example.project_1_post.entity.Comment;
+import com.example.project_1_post.dto.PostsRequestDto;
+import com.example.project_1_post.dto.PostsResponseDto;
 import com.example.project_1_post.entity.Post;
 import com.example.project_1_post.entity.User;
-import com.example.project_1_post.jwt.JwtUtil;
 import com.example.project_1_post.repository.PostRepository;
-import com.example.project_1_post.repository.UserRepository;
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.RequestEntity.post;
 
@@ -26,30 +21,32 @@ public class PostService {
     private final PostRepository postRepository;
 
     @Transactional
-    public Post createPost(PostingRequestDto postingRequestDto, User user) {
-            String username = user.getUsername();
-            Post post = new Post(username, postingRequestDto);
+    public PostsResponseDto createPost(PostsRequestDto postsRequestDto, String username){
+            Post post = new Post(username, postsRequestDto);
             postRepository.save(post);
-            return post;
+            return new PostsResponseDto(post);
     }
 
     @Transactional(readOnly = true)
-    public List<Post> getAllPosts() {
-        return postRepository.findAllByOrderByModifiedAtDesc();
+    public List<PostsResponseDto> getAllPosts() {
+        List<Post> postList = postRepository.findAllByOrderByModifiedAtDesc();
+        List<PostsResponseDto> postsResponseDtoList = postList.stream().map(post -> new PostsResponseDto(post)).collect(Collectors.toList());
+        return postsResponseDtoList; // postsResponseDtoList 안의 필드들을 public으로 바꾸니까 다 나옴
     }
 
     @Transactional(readOnly = true)
-    public Optional<Post> getPost(Long id) {
-        return postRepository.findById(id);
+    public PostsResponseDto getPost(Long id) {
+        Post post = postRepository.findById(id).get();
+        return new PostsResponseDto(post);
     }
 
     @Transactional
-    public Post updatePost(Long id, PostingRequestDto postingRequestDto, Post post, User user) {
+    public Post updatePost(Long id, PostsRequestDto postsRequestDto, Post post, User user) {
             if (User.isAdmin(user)){
-                post.update(postingRequestDto);
+                post.update(postsRequestDto);
                 return post;
             } else if (Post.isSameNamePost(post, user)) {
-                post.update(postingRequestDto);
+                post.update(postsRequestDto);
                 return post;
             } else {
                 throw new IllegalArgumentException("권한이 없습니다.");

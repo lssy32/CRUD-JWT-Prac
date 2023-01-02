@@ -1,6 +1,7 @@
 package com.example.project_1_post.controller;
 
-import com.example.project_1_post.dto.CommentDto;
+import com.example.project_1_post.dto.CommentRequestDto;
+import com.example.project_1_post.dto.CommentResponseDto;
 import com.example.project_1_post.entity.Comment;
 import com.example.project_1_post.entity.Post;
 import com.example.project_1_post.entity.User;
@@ -26,8 +27,8 @@ public class CommentController {
     private final CommentService commentService;
     private final CommentRepository commentRepository;
 
-    @PostMapping("api/{id}/newcomment")
-    public Comment createComment(@PathVariable Long id, @RequestBody CommentDto commentDto, HttpServletRequest request) {
+    @PostMapping("api/{posts_id}/newcomment")
+    public CommentResponseDto createComment(@PathVariable Long posts_id, @RequestBody CommentRequestDto commentRequestDto, HttpServletRequest request) {
         String token = jwtUtil.resolveToken(request); // 토큰 꺼내기
         Claims claims; // 이건 모지
 
@@ -43,17 +44,17 @@ public class CommentController {
             User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
                     () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
             );
-            Post post = postRepository.findById(id).orElseThrow(
+            Post post = postRepository.findById(posts_id).orElseThrow(
                     () -> new IllegalArgumentException("게시글이 존재하지 않습니다.")
             );
-            return commentService.createComment(commentDto, user, post);
+            return commentService.createComment(user, commentRequestDto, post);
         } else {
             throw new IllegalArgumentException("토큰이 없습니다.");
         }
     }
 
     @PutMapping("/api/comments/{id}")
-    public Comment updateComment(@PathVariable Long id, @RequestBody CommentDto commentDto, HttpServletRequest request) {
+    public CommentResponseDto updateComment(@PathVariable Long id, @RequestBody CommentRequestDto commentRequestDto, HttpServletRequest request) {
         // Request에서 Token 가져오기
         String token = jwtUtil.resolveToken(request); // 토큰 꺼내기
         Claims claims; // 이건 모지
@@ -77,7 +78,7 @@ public class CommentController {
             Comment comment = commentRepository.findById(id).orElseThrow(
                     () -> new IllegalArgumentException("댓글이 존재하지 않습니다.")
             );
-            return commentService.updateComment(id, commentDto, comment, user, post);
+            return commentService.updateComment(id, commentRequestDto, comment, user, post);
         } else {
             throw new IllegalArgumentException("토큰이 없습니다.");
         }

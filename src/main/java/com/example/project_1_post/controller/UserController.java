@@ -1,7 +1,6 @@
 package com.example.project_1_post.controller;
 
-import com.example.project_1_post.dto.UserDto;
-import com.example.project_1_post.entity.User;
+import com.example.project_1_post.dto.UserRequestDto;
 import com.example.project_1_post.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +19,8 @@ public class UserController {
 
     @PostMapping("api/auth/signup")
     @ResponseBody
-    public Map signup(@RequestBody UserDto userDto ) {
-        userService.signup(userDto);
+    public Map signup(@RequestBody UserRequestDto userRequestDto) {
+        userService.signup(userRequestDto);
         Map map = new HashMap<>();
         map.put("msg", "회원가입 성공");
         map.put("statusCode", "200");
@@ -30,8 +29,8 @@ public class UserController {
 
     @PostMapping("api/auth/login")
     @ResponseBody
-    public Map login(@RequestBody UserDto userDto, HttpServletResponse response) {
-        userService.login(userDto, response);
+    public Map login(@RequestBody UserRequestDto userRequestDto, HttpServletResponse response) {
+        userService.login(userRequestDto, response);
         Map map = new HashMap<>();
         map.put("msg", "로그인 성공");
         map.put("statusCode", "200");

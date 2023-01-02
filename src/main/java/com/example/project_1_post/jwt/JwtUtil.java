@@ -1,6 +1,8 @@
 package com.example.project_1_post.jwt;
 
 
+import com.example.project_1_post.dto.AuthenticatedUser;
+import com.example.project_1_post.entity.UserRoleEnum;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
@@ -47,13 +49,13 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(String username) {
+    public String createToken(String username, UserRoleEnum role) {
         Date date = new Date();
 
         return BEARER_PREFIX +
                 Jwts.builder()
                         .setSubject(username)
-                        .claim(AUTHORIZATION_KEY, username)
+                        .claim(AUTHORIZATION_KEY, role)
                         .setExpiration(new Date(date.getTime() + TOKEN_TIME))
                         .setIssuedAt(date)
                         .signWith(key, signatureAlgorithm)
@@ -82,4 +84,14 @@ public class JwtUtil {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
+    public AuthenticatedUser validateAndGetInfo(String token) {
+        if (validateToken(token)) {
+            Claims claims = getUserInfoFromToken(token);
+            String username = claims.getSubject();
+            UserRoleEnum role = UserRoleEnum.valueOf((claims.get("auth").toString()));
+            return new AuthenticatedUser(username, role);
+        } else {
+            throw new IllegalArgumentException("Token Error");
+        }
+    }
 }

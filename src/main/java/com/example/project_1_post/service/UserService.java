@@ -1,6 +1,6 @@
 package com.example.project_1_post.service;
 
-import com.example.project_1_post.dto.UserDto;
+import com.example.project_1_post.dto.UserRequestDto;
 import com.example.project_1_post.entity.User;
 import com.example.project_1_post.entity.UserRoleEnum;
 import com.example.project_1_post.jwt.JwtUtil;
@@ -19,10 +19,10 @@ public class UserService {
     private final JwtUtil jwtUtil;
     private static final String ADMIN_TOKEN = "AAABnvxRVklrnYxKZ0aHgTBcXukeZygoC";
     @Transactional
-    public void signup(UserDto userDto) {
+    public void signup(UserRequestDto userRequestDto) {
 
-        String username = userDto.getUsername();
-        String password = userDto.getPassword();
+        String username = userRequestDto.getUsername();
+        String password = userRequestDto.getPassword();
 
         // 회원 중복 확인
         Optional<User> found = userRepository.findByUsername(username);
@@ -32,8 +32,8 @@ public class UserService {
 
         // 사용자 ROLE 확인
         UserRoleEnum role = UserRoleEnum.USER;
-        if (userDto.isAdmin()) {
-            if (!userDto.getAdminToken().equals(ADMIN_TOKEN)) {
+        if (userRequestDto.isAdmin()) {
+            if (!userRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
                 throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
             }
             role = UserRoleEnum.ADMIN;
@@ -45,10 +45,10 @@ public class UserService {
     }
 
     @Transactional
-    public void login(UserDto userDto, HttpServletResponse response) {
+    public void login(UserRequestDto userRequestDto, HttpServletResponse response) {
 
-        String username = userDto.getUsername();
-        String password = userDto.getPassword();
+        String username = userRequestDto.getUsername();
+        String password = userRequestDto.getPassword();
 
         // 사용자 확인
         User user = userRepository.findByUsername(username).orElseThrow(
@@ -59,6 +59,7 @@ public class UserService {
             throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername()));
+
+        response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(username, user.getRole()));
     }
 }
